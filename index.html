@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bouncing Ball Game</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    cursor: none; /* Hide cursor */
+  }
+
+  .container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0;
+  }
+
+  .platform {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px; /* Smaller platform */
+    height: 10px; /* Smaller platform */
+    background-color: #333;
+  }
+
+  .ball {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px; /* Smaller ball */
+    height: 20px; /* Smaller ball */
+    background-color: red;
+    border-radius: 50%;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="platform"></div>
+  <div class="ball"></div>
+</div>
+<script>
+  const ball = document.querySelector('.ball');
+  const platform = document.querySelector('.platform');
+  const container = document.querySelector('.container');
+
+  container.addEventListener('mousemove', (event) => {
+    const mouseX = event.clientX;
+    const containerLeft = container.getBoundingClientRect().left;
+    const platformWidth = platform.offsetWidth;
+    const containerWidth = container.offsetWidth;
+    let platformLeft = mouseX - containerLeft;
+
+    // Ensure the platform stays within the container
+    if (platformLeft < 0) {
+      platformLeft = 0;
+    } else if (platformLeft + platformWidth > containerWidth) {
+      platformLeft = containerWidth - platformWidth;
+    }
+
+    platform.style.left = platformLeft + 'px';
+  });
+
+  let x = 50;
+  let y = 50;
+  let dx = 2;
+  let dy = 2;
+  const platformHeight = platform.offsetHeight;
+
+  function animate() {
+    x += dx;
+    y += dy;
+
+    if (x + ball.offsetWidth >= window.innerWidth || x <= 0) {
+      dx = -dx;
+    }
+
+    if (y + ball.offsetHeight >= window.innerHeight || y <= 0) {
+      dy = -dy;
+    }
+
+    // Check collision with platform
+    if (y + ball.offsetHeight >= window.innerHeight - platformHeight && x + ball.offsetWidth >= platform.offsetLeft && x <= platform.offsetLeft + platform.offsetWidth) {
+      dy = -dy; // Bounce upwards if colliding with platform
+    }
+
+    // Check collision with ground
+    if (y + ball.offsetHeight >= window.innerHeight) {
+      alert("Game Over! You Lost.");
+      location.reload(); // Reload the page to restart the game
+    }
+
+    ball.style.left = x + 'px';
+    ball.style.top = y + 'px';
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
+</body>
+</html>
